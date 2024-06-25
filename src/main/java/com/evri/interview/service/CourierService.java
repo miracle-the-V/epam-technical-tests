@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -16,9 +15,19 @@ public class CourierService {
     private CourierRepository repository;
 
     public List<Courier> getAllCouriers() {
-        return repository.findAll()
-                .stream()
-                .map(courierTransformer::toCourier)
-                .collect(Collectors.toList());
+        return courierTransformer.toCouriers(repository.findAll());
     }
+
+    public List<Courier> getActiveCouriers() {
+        return courierTransformer.toCouriers(repository.findByActive(true));
+    }
+
+    public boolean courierExists(long id) {
+       return repository.existsById(id);
+    }
+
+    public void addCourier(Courier courier) {
+        repository.save(courierTransformer.toCourierEntity(courier));
+    }
+
 }
